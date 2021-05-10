@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<launch>
+
+<arg name="isVehicle" default="false"/>
+<arg name="isOperator" default="false"/>
+<arg name="vehicleID" default="tum-q7"/>
+
+<group ns="Operator/CommandCreation" if="$(eval isOperator)">
+    <node name="CommandCreator" pkg="tod_command_creation" type="OperatorCommandCreator" output="screen">
+        <rosparam command="load" file="$(find tod_vehicle_config)/vehicle_config/$(arg vehicleID)/vehicle-params.yaml"/>
+        <param name="ConstraintSteeringRate" value="false"/>
+        <param name="maxVelocity" value="10"/> <!-- m/s -->
+        <param name="maxAcceleration" value="4"/> <!-- m/s² -->
+        <param name="maxDeceleration" value="9"/> <!-- m/s² -->
+        <param name="maxSteeringWheelAngleRate" value="15"/> <!-- rad/s -->
+    </node>
+    
+    <node name="PrimaryCmdSender" pkg="tod_command_creation" type="OperatorPrimaryCommandSender" output="screen"/>
+    <node name="SecondaryCmdSender" pkg="tod_command_creation" type="OperatorSecondaryCommandSender" output="screen"/>
+</group>
+
+<group ns="Vehicle/CommandCreation" if="$(eval isVehicle)">
+    <node name="SecondaryCmdReceiver" pkg="tod_command_creation" type="VehicleSecondaryCommandReceiver" output="screen"/>
+    <node name="PrimaryCmdReceiver" pkg="tod_command_creation" type="VehiclePrimaryCommandReceiver" output="screen"/>
+</group>
+
+</launch>

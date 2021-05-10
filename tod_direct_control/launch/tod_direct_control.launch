@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<launch>
+
+<group ns="Vehicle/DirectControl" >
+    <node name="ForwardPrimaryCtrlCmd" pkg="tod_direct_control" type="VehicleForwardPrimaryCtrlCmd">
+        <remap from="status_msg" to="/Vehicle/Manager/status_msg"/>
+        <remap from="primary_cmd_out" to="/Vehicle/DirectControl/primary_control_cmd"/>
+        <remap from="primary_cmd_in" to="/Vehicle/CommandCreation/primary_control_cmd"/>
+    </node>
+</group>
+
+</launch>

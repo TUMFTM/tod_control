@@ -1,0 +1,5 @@
+add_executable(VehicleForwardPrimaryCtrlCmd ForwardPrimaryCtrlCmd.cpp)
+add_dependencies(VehicleForwardPrimaryCtrlCmd ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(VehicleForwardPrimaryCtrlCmd ${catkin_LIBRARIES})
+target_include_directories(VehicleForwardPrimaryCtrlCmd PRIVATE ${catkin_INCLUDE_DIRS})
+install(TARGETS VehicleForwardPrimaryCtrlCmd RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
