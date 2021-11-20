@@ -6,7 +6,7 @@
 #include "tod_msgs/SecondaryControlCmd.h"
 #include "tod_msgs/VehicleEnums.h"
 #include "tod_msgs/joystickConfig.h"
-#include <tod_helper_functions/VehicleModelHelpers.h>
+#include <tod_helper/vehicle/Model.h>
 #include <utility>
 #include <stdio.h>
 #include <vector>
@@ -30,6 +30,7 @@ private:
     tod_msgs::SecondaryControlCmd _secondaryControlMsg;
 
     bool _constraintSteeringRate{false};
+    bool _invertSteeringInGearReverse{false};
     float _maxSpeedms{10};
     float _maxAcceleration{4};
     float _maxDeceleration{9};

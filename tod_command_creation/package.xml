@@ -11,12 +11,12 @@
 
     <build_depend>roscpp</build_depend>
     <build_depend>tod_msgs</build_depend>
-    <build_depend>tod_helper_functions</build_depend>
+    <build_depend>tod_helper</build_depend>
     <build_depend>tod_network</build_depend>
 
     <build_export_depend>roscpp</build_export_depend>
     <build_export_depend>tod_msgs</build_export_depend>
-    <build_export_depend>tod_helper_functions</build_export_depend>
+    <build_export_depend>tod_helper</build_export_depend>
     <build_export_depend>tod_network</build_export_depend>
 
     <exec_depend>roscpp</exec_depend>

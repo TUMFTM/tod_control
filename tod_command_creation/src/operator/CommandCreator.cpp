@@ -21,11 +21,15 @@ CommandCreator::CommandCreator(ros::NodeHandle& nodeHandle) {
 
     if (!nodeHandle.getParam(ros::this_node::getName() + "/maximum_steering_wheel_angle", _maxSteeringWheelAngle))
         ROS_ERROR("%s: Could not get maximum steering wheel angle - using %f deg",
-                  ros::this_node::getName().c_str(), VehicleModelHelpers::rad2deg(_maxSteeringWheelAngle));
+                  ros::this_node::getName().c_str(), tod_helper::Vehicle::Model::rad2deg(_maxSteeringWheelAngle));
 
     if (!nodeHandle.getParam(ros::this_node::getName() + "/ConstraintSteeringRate", _constraintSteeringRate))
         ROS_ERROR_STREAM(ros::this_node::getName() << ": Could not get param /ConstraintSteeringRate - using "
                                                    << (_constraintSteeringRate ? "true" : "false"));
+
+    if (!nodeHandle.getParam(ros::this_node::getName() + "/InvertSteeringInGearReverse", _invertSteeringInGearReverse))
+        ROS_ERROR_STREAM(ros::this_node::getName() << ": Could not get param /InvertSteeringInGearReverse - using "
+                                                   << (_invertSteeringInGearReverse ? "true" : "false"));
 
     if (!nodeHandle.getParam(ros::this_node::getName() + "/maxVelocity", _maxSpeedms))
         ROS_ERROR_STREAM(ros::this_node::getName() << ": Could not get param /maxVelocity - using "
@@ -89,6 +93,10 @@ void CommandCreator::calculate_steering_wheel_angle(tod_msgs::PrimaryControlCmd&
     } else { // output unconstraint SWA
         out.steeringWheelAngle = newDesiredSWA;
     }
+
+    if (_invertSteeringInGearReverse &&
+        _secondaryControlMsg.gearPosition == eGearPosition::GEARPOSITION_REVERSE)
+        out.steeringWheelAngle = -out.steeringWheelAngle;
 }
 
 void CommandCreator::calculate_desired_velocity(tod_msgs::PrimaryControlCmd &out,

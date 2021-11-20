@@ -9,11 +9,11 @@ find_package(catkin REQUIRED COMPONENTS
     roscpp
     tod_msgs
     tod_network
-    tod_helper_functions
+    tod_helper
 )
 
 catkin_package(
-    CATKIN_DEPENDS roscpp tod_msgs tod_helper_functions tod_network
+    CATKIN_DEPENDS roscpp tod_msgs tod_helper tod_network
 )
 
 option(OPERATOR "Build operator targets" ON)
