@@ -1,0 +1,42 @@
+Object1:
+  objectRefPoint: 9
+  frame_id: "ftm"
+  distance_x_y: [-2.97817693404,  -29.3354036131]
+  dimension_length_width_height: [1.0, 1.0, 1.0]
+  yaw_angle: 0.0
+Object2:
+  objectRefPoint: 9
+  frame_id: "ftm"
+  distance_x_y: [-29.2908815405,  -64.0863946917]
+  dimension_length_width_height: [1.0, 1.0, 1.0]
+  yaw_angle: 0.0
+Object3:
+  objectRefPoint: 9
+  frame_id: "ftm"
+  distance_x_y: [-13.946, -104.759]
+  dimension_length_width_height: [1.0, 1.0, 1.0]
+  yaw_angle: 0.0
+Object4:
+  objectRefPoint: 9
+  frame_id: "ftm"
+  distance_x_y: [2.6002, -115.97]
+  dimension_length_width_height: [1.0, 1.0, 1.0]
+  yaw_angle: 0.0
+Object5:
+  objectRefPoint: 9
+  frame_id: "ftm"
+  distance_x_y: [23.701533, -139.4568]
+  dimension_length_width_height: [1.0, 1.0, 1.0]
+  yaw_angle: 0.0
+Object6:
+  objectRefPoint: 9
+  frame_id: "ftm"
+  distance_x_y: [10.72933, -171.79]
+  dimension_length_width_height: [1.0, 1.0, 1.0]
+  yaw_angle: 0.0
+Object7:
+  objectRefPoint: 9
+  frame_id: "ftm"
+  distance_x_y: [75.524, -161.25]
+  dimension_length_width_height: [1.0, 1.0, 1.0]
+  yaw_angle: 0.0

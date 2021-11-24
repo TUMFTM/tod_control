@@ -1,0 +1,10 @@
+grid_map_topic: /Vehicle/PerceptionModification/appended_grid_map
+
+grid_map_visualizations:
+
+  - name: occupancyProbability
+    type: occupancy_grid
+    params:
+      layer: occupancyProbability
+      data_min: 1.08
+      data_max: -0.16

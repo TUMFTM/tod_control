@@ -1,0 +1,26 @@
+LidarPoint1:
+  frame_id: "ftm"
+  coordinates_x_y_z: [1.102, 12.19, -0.36]
+
+#LidarPoint2:
+#  frame_id: "ftm"  
+#  coordinates_x_y_z: [-15.1, 6.0, 0.0]
+#
+#LidarPoint3:
+#  frame_id: "ftm"
+#  coordinates_x_y_z: [-15.15, 6.0, 0.0]
+#
+#LidarPoint4:
+#  frame_id: "ftm"
+#  coordinates_x_y_z: [1.55, -10.0, 0.0]
+#
+#LidarPoint5:
+#  frame_id: "ftm"
+#  coordinates_x_y_z: [15.55, 1.0, 0.0]
+#LidarPoint6:
+#  frame_id: "ftm"
+#  coordinates_x_y_z: [16.55, 1.0, 0.0]
+#LidarPoint7:
+#  frame_id: "ftm"
+#  coordinates_x_y_z: [17.55, 1.0, 0.0]
+#

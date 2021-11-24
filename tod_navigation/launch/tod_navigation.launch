@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<launch>
+
+<arg name="isVehicle" default="true"/>
+<arg name="isOperator" default="true"/>
+<arg name="route" default="ShalunOnWorkstationPC"/>
+
+<group ns="Vehicle/Navigation" if="$(arg isVehicle)">
+    <node name="RouteParser" pkg="tod_navigation" type="RouteProvider" output="screen">
+        <param name="pathToRoute" value="/home/$(env USER)/tof/wsp/src/tod_control/tod_navigation/xml/$(arg route).xml" />
+    </node>
+    <node name="VehicleRouteSender" pkg="tod_navigation" type="VehicleRouteSender" output="screen"/>
+</group>
+
+<group ns="Operator/Navigation" if="$(eval isOperator)">
+    <node name="OperatorRouteReceiver" pkg="tod_navigation" type="OperatorRouteReceiver" output="screen"/>
+    <node name="OperatorRouteToMeshMsg" pkg="tod_navigation" type="OperatorRouteToMeshMsg" output="screen">
+        <remap from="/route" to="route" />
+        <remap from="/routeAsMesh" to="/Operator/Visual/RouteAsMesh" />
+    </node>
+</group>
+
+</launch>

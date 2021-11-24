@@ -1,0 +1,7 @@
+#Object1:
+#  objectRefPoint: 9
+#  frame_id: "ftm"
+#  distance_x_y: [5.0, -0.75]
+#  dimension_length_width_height: [1.0, 1.0, 1.0]
+#  yaw_angle: 0.0
+#

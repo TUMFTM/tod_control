@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<launch>
+<arg name="vehicleID" default="tum-q7"/>
+
+<group ns="Tests/PurePursuit">
+    <node pkg="tod_pure_pursuit" name="tod_pure_pursuit_test" type="tod_pure_pursuit_test" output="screen">
+        <rosparam command="load" file="$(find tod_vehicle_config)/vehicle_config/$(arg vehicleID)/vehicle-params.yaml" />
+    </node>
+</group>
+
+</launch>

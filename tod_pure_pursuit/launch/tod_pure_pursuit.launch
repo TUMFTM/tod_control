@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<launch>
+<arg name="vehicleID" default="tum-q7"/>
+<arg name="controlModePackage" default="PerceptionModification"/>
+<arg name="rearAxleFrameId" default="rear_axle_footprint"/>
+<arg name="lookaheadRatio" value="0.3"/>
+<arg name="minLookaheadDistance" value="2.0"/>
+
+<arg name="ControlMode" default="4"/> <!--number from tod_msgs/msg/Status.msg-->
+<arg name="ManagerTopic" default="/Vehicle/Manager/status_msg"/> <!-- for AV usage -->
+
+<node pkg="tod_pure_pursuit" type="tod_pure_pursuit_node" name="PurePursuit" output="screen">
+      <remap from="status_msg" to="$(arg ManagerTopic)"/>
+      <remap from="trajectory" to="/Vehicle/$(arg controlModePackage)/trajectory_control_command"/>
+      <remap from="odometry" to="/Vehicle/VehicleBridge/odometry"/>
+      <param name="ControlMode" value="$(arg ControlMode)"/>
+      <param name="rearAxleFrameId" value="$(arg rearAxleFrameId)"/> 
+      <param name="lookaheadRatio" value="$(arg lookaheadRatio)"/> 
+      <param name="minLookaheadDistance" value="$(arg minLookaheadDistance)"/> 
+      <param name="debug" value="false"/>
+      <rosparam command="load" file="$(find tod_vehicle_config)/vehicle_config/$(arg vehicleID)/vehicle-params.yaml" />
+</node>
+</launch>

@@ -1,0 +1,120 @@
+<?xml version="1.0"?>
+<launch>
+
+<arg name="isVehicle" default="true"/>
+<arg name="isOperator" default="true"/>
+<arg name="isVisualization" value="true"/>
+<arg name="vehicleID" default="tum-q7"/>
+
+<arg name="fakeObjects" default="seven_fake_objects"/> <!--seven_fake_objects, zero-->
+<arg name="fakeReflection" default="zero"/> <!--reflection_pedestrian_crossing, zero-->
+<arg name="startInADMode" default="true"/> <!--false-->
+
+
+<!-- OPERATOR -->
+<group ns="Operator/PerceptionModification" if="$(eval isOperator)">
+    <node name="PerceptionModification" pkg="tod_perception_modification" type="OperatorPerceptionModification" output="screen">
+        <remap from="/status_msg" to="/Operator/Manager/status_msg"/>
+        <remap from="/object_list" to="appended_objects"/>
+        <remap from="/output_object_list" to="ModifiedObjectList"/>
+        <remap from="/output_object_list_as_mesh" to="ModifiedObjectListAsMesh"/>
+        <remap from="/grid_map" to="appended_grid_map"/>
+        <remap from="/output_grid_map" to="ModifiedGridMap"/>
+        <remap from="/grid_map_visualization" to="/Operator/Lidar/LidarFront/GridMapVisualisation000"/>
+        <remap from="/grid_map_modified" to="ModifiedGridMapAsMesh"/>
+        <remap from="/input_mouse_clicks" to="/Operator/Visual/MousePositionClick"/>
+        <remap from="/input_key_press" to="/Operator/Visual/KeyPress"/>
+        <remap from="/odometry" to="/Operator/VehicleBridge/odometry"/>
+    </node>
+    <node name="OperatorRequestSender" pkg="tod_perception_modification" type="OperatorRequestSender" output="screen">
+    </node>
+    <node name="OperatorResponseReceiver" pkg="tod_perception_modification" type="OperatorResponseReceiver" output="screen">
+    </node>
+    <node name="OperatorApprovalSender" pkg="tod_perception_modification" type="OperatorApprovalSender" output="screen">
+    </node>
+    <node name="OperatorGridMapReceiver" pkg="tod_perception_modification" type="OperatorGridMapReceiver" output="screen">
+    </node>
+    <node name="OperatorObjectsReceiver" pkg="tod_perception_modification" type="OperatorObjectsReceiver" output="screen">
+    </node>
+    <node name="OperatorVelocitySender" pkg="tod_perception_modification" type="OperatorVelocitySender" output="screen">
+    </node>
+    <node name="OperatorPopupNewScenario" pkg="tod_perception_modification" type="OperatorPopupNewScenario" output="screen">
+    </node>
+</group>
+
+<!-- VEHICLE -->
+<group ns="Vehicle/PerceptionModification" if="$(eval isVehicle)">
+    <!--node type="rviz" name="rviz" pkg="rviz" args="-d $(find tod_perception_modification)/rviz/rviz_grid_maps.rviz">
+    </node-->
+    <node pkg="tod_perception_modification" type="VehicleFakeObjectsPublisher" name="VehicleFakeObjectsPublisher" output="screen">
+        <rosparam command="load" file="$(find tod_perception_modification)/yaml/$(arg fakeObjects).yaml" />
+        <rosparam param="desiredObjectsFrameId">"LidarFront"</rosparam>
+        <remap from="input_object_list" to="/Vehicle/Lidar/LidarFront/object_list"/>
+        <remap from="new_object_list" to="appended_objects"/>
+        <param name="secondsToWaitForTFTreeToBeBuilt" value="2"/>
+    </node>
+    <node pkg="tod_perception_modification" type="VehicleFakeCellsPublisher" name="VehicleFakeCellsPublisher" output="screen">
+        <rosparam command="load" file="$(find tod_perception_modification)/yaml/$(arg fakeReflection).yaml" />
+        <rosparam command="load" file="$(find tod_lidar)/config/grid_map.yaml" />
+        <remap from="input_grid_map" to="/Vehicle/Lidar/GridMap/grid_map"/>
+        <remap from="new_grid_map" to="appended_grid_map"/>
+        <remap from="odometry" to="/Vehicle/VehicleBridge/odometry"/>
+    </node>
+    <node name="Visualizer" pkg="grid_map_visualization" type="grid_map_visualization" output="screen">
+        <rosparam command="load" file="$(find tod_perception_modification)/yaml/grid_map_visualization_rviz.yaml"/>
+    </node>
+    <node pkg="tod_perception_modification" type="VehiclePerceptionModification" name="VehiclePerceptionModification" output="screen">
+        <remap from="input_grid_map" to="appended_grid_map"/>
+        <remap from="output_grid_map" to="grid_map"/>
+        <remap from="input_object_list" to="appended_objects"/>
+        <remap from="output_object_list" to="object_list"/>
+        <remap from="odometry" to="/Vehicle/VehicleBridge/odometry"/>
+    </node>
+    <!--node name="Visualizer2" pkg="grid_map_visualization" type="grid_map_visualization" output="screen">
+        <rosparam command="load" file="$(find tod_perception_modification)/yaml/grid_map_visualization_rviz2.yaml"/>
+    </node-->
+    <node name="VehicleRequestReceiver" pkg="tod_perception_modification" type="VehicleRequestReceiver" output="screen">
+    </node>
+    <node name="VehicleResponseSender" pkg="tod_perception_modification" type="VehicleResponseSender" output="screen">
+    </node>
+    <node name="VehicleApprovalReceiver" pkg="tod_perception_modification" type="VehicleApprovalReceiver" output="screen">
+    </node>
+    <node name="VehicleGridMapSender" pkg="tod_perception_modification" type="VehicleGridMapSender" output="screen">
+    </node>
+    <node name="VehicleObjectsSender" pkg="tod_perception_modification" type="VehicleObjectsSender" output="screen">
+    </node>
+    <node name="VehicleVelocityReceiver" pkg="tod_perception_modification" type="VehicleVelocityReceiver" output="screen">
+    </node>
+    <node pkg="tod_perception_modification" type="VehicleRouteToPath" name="VehicleRouteToPath" output="screen">
+        <rosparam command="load" file="$(find tod_perception_modification)/yaml/route_to_path_config.yaml" />
+        <param name="secondsToWaitForTFTreeToBeBuilt" value="2"/>
+        <remap from="route" to="/Vehicle/Navigation/route"/>
+        <remap from="path" to="suggested_trajectory"/>
+    </node>
+    <node pkg="tod_perception_modification" type="VehiclePathToCollisionFreePath" name="VehiclePathToCollisionFreePath"  output="screen">
+        <rosparam command="load" file="$(find tod_perception_modification)/yaml/path_to_collision_free_path_config.yaml" />
+        <rosparam command="load" file="$(find tod_vehicle_config)/vehicle_config/$(arg vehicleID)/vehicle-params.yaml" />
+        <rosparam command="load" file="$(find tod_lidar)/config/grid_map.yaml" />
+        <remap from="input_trajectory" to="suggested_trajectory"/>
+        <remap from="output_trajectory" to="trajectory_control_command"/>
+        <remap from="input_grid_map" to="grid_map"/>
+        <remap from="input_object_list" to="object_list"/>
+    </node>
+    <include file="$(find tod_pure_pursuit)/launch/tod_pure_pursuit.launch">
+        <arg name="controlModePackage" value="PerceptionModification"/>
+        <arg name="ControlMode" value="4"/> <!--number from include/tod_msgs/controlMode.h-->
+        <arg name="ManagerTopic" value="/Vehicle/PerceptionModification/perception_modification_status_for_pure_pursuit"/>
+    </include>
+    <node pkg="tod_perception_modification" type="VehicleCommunicator" name="VehicleCommunicator" output="screen">
+        <param name="startInADMode" value="$(arg startInADMode)"/>
+        <remap from="status_msg" to="/Vehicle/Manager/status_msg"/>
+    </node>
+    <node pkg="tod_perception_modification" type="VehicleControlCommandCreator" name="VehicleControlCommandCreator">
+        <remap from="primary_control_cmd_input" to="/Vehicle/PerceptionModification/primary_control_cmd"/>
+        <remap from="primary_control_cmd" to="/Vehicle/VehicleBridge/primary_control_cmd"/>
+    </node>
+    <node name="VehiclePopupTrigger" pkg="tod_perception_modification" type="VehiclePopupTrigger" output="screen">
+    </node>
+</group>
+
+</launch>

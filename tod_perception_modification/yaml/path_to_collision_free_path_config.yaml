@@ -1,0 +1,4 @@
+debug: "true"
+buffer_distance_in_meter: 0.75
+brake_acceleration_in_m_s_2: 2.0
+radius_buffer: 0.0

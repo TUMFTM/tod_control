@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompletelyWrongFormat>
+    <Msg hello='42'/>
+</CompletelyWrongFormat>
