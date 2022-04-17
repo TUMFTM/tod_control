@@ -1,13 +1,14 @@
 // Copyright 2020 Simon Hoffmann
 #include "CommandCreator.h"
 
-CommandCreator::CommandCreator(ros::NodeHandle& nodeHandle) {
-    _joystickSubs = nodeHandle.subscribe("/Operator/InputDevices/joystick", 1,
+CommandCreator::CommandCreator(ros::NodeHandle& nodeHandle) : _nh(nodeHandle) {
+    _joystickSubs = _nh.subscribe("/Operator/InputDevices/joystick", 1,
                                          &CommandCreator::callback_joystick_msg, this);
-    _statusSubs = nodeHandle.subscribe("/Operator/Manager/status_msg", 1,
+    _statusSubs = _nh.subscribe("/Operator/Manager/status_msg", 1,
                                        &CommandCreator::callback_status_msg, this);
-    _primaryControlPub = nodeHandle.advertise<tod_msgs::PrimaryControlCmd>("primary_control_cmd", 1);
-    _secondaryControlPub = nodeHandle.advertise<tod_msgs::SecondaryControlCmd>("secondary_control_cmd", 1);
+    _primaryControlPub = _nh.advertise<tod_msgs::PrimaryControlCmd>("primary_control_cmd", 1);
+    _secondaryControlPub = _nh.advertise<tod_msgs::SecondaryControlCmd>("secondary_control_cmd", 1);
+    _vehParams = std::make_unique<tod_core::VehicleParameters>(_nh);
 
     _prevButtonState.insert(std::pair<joystick::ButtonPos, int>(joystick::ButtonPos::INCREASE_SPEED, 0));
     _prevButtonState.insert(std::pair<joystick::ButtonPos, int>(joystick::ButtonPos::DECREASE_SPEED, 0));
@@ -19,31 +20,28 @@ CommandCreator::CommandCreator(ros::NodeHandle& nodeHandle) {
     _prevButtonState.insert(std::pair<joystick::ButtonPos, int>(joystick::ButtonPos::INCREASE_GEAR, 0));
     _prevButtonState.insert(std::pair<joystick::ButtonPos, int>(joystick::ButtonPos::DECREASE_GEAR, 0));
 
-    if (!nodeHandle.getParam(ros::this_node::getName() + "/maximum_steering_wheel_angle", _maxSteeringWheelAngle))
-        ROS_ERROR("%s: Could not get maximum steering wheel angle - using %f deg",
-                  ros::this_node::getName().c_str(), tod_helper::Vehicle::Model::rad2deg(_maxSteeringWheelAngle));
 
-    if (!nodeHandle.getParam(ros::this_node::getName() + "/ConstraintSteeringRate", _constraintSteeringRate))
+    if (!_nh.getParam(ros::this_node::getName() + "/ConstraintSteeringRate", _constraintSteeringRate))
         ROS_ERROR_STREAM(ros::this_node::getName() << ": Could not get param /ConstraintSteeringRate - using "
                                                    << (_constraintSteeringRate ? "true" : "false"));
 
-    if (!nodeHandle.getParam(ros::this_node::getName() + "/InvertSteeringInGearReverse", _invertSteeringInGearReverse))
+    if (!_nh.getParam(ros::this_node::getName() + "/InvertSteeringInGearReverse", _invertSteeringInGearReverse))
         ROS_ERROR_STREAM(ros::this_node::getName() << ": Could not get param /InvertSteeringInGearReverse - using "
                                                    << (_invertSteeringInGearReverse ? "true" : "false"));
 
-    if (!nodeHandle.getParam(ros::this_node::getName() + "/maxVelocity", _maxSpeedms))
+    if (!_nh.getParam(ros::this_node::getName() + "/maxVelocity", _maxSpeedms))
         ROS_ERROR_STREAM(ros::this_node::getName() << ": Could not get param /maxVelocity - using "
                                                    << _maxSpeedms << " m/s");
 
-    if (!nodeHandle.getParam(ros::this_node::getName() + "/maxAcceleration", _maxAcceleration))
+    if (!_nh.getParam(ros::this_node::getName() + "/maxAcceleration", _maxAcceleration))
         ROS_ERROR_STREAM(ros::this_node::getName() << ": Could not get param /maxAcceleration - using "
                                                    << _maxAcceleration << " m/s^2");
 
-    if (!nodeHandle.getParam(ros::this_node::getName() + "/maxDeceleration", _maxDeceleration))
+    if (!_nh.getParam(ros::this_node::getName() + "/maxDeceleration", _maxDeceleration))
         ROS_ERROR_STREAM(ros::this_node::getName() << ": Could not get param /maxDeceleration - using "
                                                    << _maxDeceleration << " m/s^2");
 
-    if (!nodeHandle.getParam(ros::this_node::getName() + "/maxSteeringWheelAngleRate", _maxSteeringWheelAngleRate))
+    if (!_nh.getParam(ros::this_node::getName() + "/maxSteeringWheelAngleRate", _maxSteeringWheelAngleRate))
         ROS_ERROR_STREAM(ros::this_node::getName() << ": Could not get param /maxSteeringWheelAngleRate - using "
                                                    << _maxSteeringWheelAngleRate << " rad/s");
 }
@@ -52,6 +50,9 @@ void CommandCreator::run() {
     ros::Rate loop_rate(100);
     while (ros::ok()) {
         ros::spinOnce();
+        if (_vehParams->vehicle_id_has_changed()) {
+            _vehParams->load_parameters();
+        }
         if (_joystickInputSet && _status == tod_msgs::Status::TOD_STATUS_TELEOPERATION) {
             _primaryControlMsg.header.stamp = ros::Time::now();
             _secondaryControlMsg.header.stamp = ros::Time::now();
@@ -81,7 +82,7 @@ void CommandCreator::calculate_steering_wheel_angle(tod_msgs::PrimaryControlCmd&
     static ros::Duration dur;
     static double oldSetSWA{0.0};
     // calc desired SWA
-    double newDesiredSWA = axes.at(joystick::AxesPos::STEERING) * _maxSteeringWheelAngle;
+    double newDesiredSWA = axes.at(joystick::AxesPos::STEERING) * _vehParams->get_max_swa_rad();
 
     if (_constraintSteeringRate) { // constraint steering rate
         dur = ros::Time::now() - tPrev;

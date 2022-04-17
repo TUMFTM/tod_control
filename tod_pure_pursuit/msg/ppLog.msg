@@ -1,0 +1,4 @@
+float64 timeErrorToFirstPose
+float64 timeErrorToClosestPose
+float64 poseError
+int32 closestWP

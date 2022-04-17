@@ -13,6 +13,7 @@
     <build_depend>tod_msgs</build_depend>
     <build_depend>tod_helper</build_depend>
     <build_depend>tod_network</build_depend>
+    <build_depend>tod_core</build_depend>
 
     <build_export_depend>roscpp</build_export_depend>
     <build_export_depend>tod_msgs</build_export_depend>

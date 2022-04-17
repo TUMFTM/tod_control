@@ -7,8 +7,8 @@
 #include <tod_msgs/VehicleData.h>
 #include <sensor_msgs/Joy.h>
 #include <tod_msgs/joystickConfig.h>
-#include <tod_helper/vehicle/Parameters.h>
 #include "tod_msgs/VehicleEnums.h"
+#include "tod_core/VehicleParameters.h"
 #include <std_msgs/Float64.h>
 
 class PIController {
@@ -51,7 +51,7 @@ public:
 
 private:
     ros::NodeHandle& _nh;
-    tod_helper::Vehicle::Parameters _vehicleParams;
+    std::unique_ptr<tod_core::VehicleParameters> _vehicleParams;
     std::unique_ptr<PIController> _piCtrler{nullptr};
     std::map<std::string, ros::Subscriber> _subscribers;
     bool _invertSteeringInGearReverse{false};
