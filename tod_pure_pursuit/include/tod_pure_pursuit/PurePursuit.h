@@ -41,7 +41,7 @@ struct PurePursuitConfig {
                     ros::this_node::getName().c_str(), checkTrajectoryOutdated);
     }
     double minLookahead{4.0};
-    double lookaheadRatio{0.5}; // Todo: ceck if in reasonable range (<10)
+    double lookaheadRatio{0.5};
     double lookaheadDistance{0.0};
     bool checkTrajectoryOutdated{false};
     std::string rearAxleFrameId{"rear_axle_footprint"};

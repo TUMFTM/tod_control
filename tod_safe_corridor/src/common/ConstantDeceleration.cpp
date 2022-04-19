@@ -34,7 +34,7 @@ double constexpr ConstantDeceleration::calc_velocity(const double s, const doubl
 double ConstantDeceleration::calc_time_with_offset(double v0, double s, double s0, double a) {
     if (v0 == 0)
         return 0;
-    return (s <= s0) ? s / v0 : s0/v0 + calc_time(v0, s-s0, a);//todo: v0 = 0;
+    return (s <= s0) ? s / v0 : s0/v0 + calc_time(v0, s-s0, a);
 }
 
 double ConstantDeceleration::calc_time(const double v0, const double s, const double a) {

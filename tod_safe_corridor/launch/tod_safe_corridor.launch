@@ -11,9 +11,9 @@
 
 <arg name="corridorBufferFront" value="0.1"/>
 <arg name="corridorBufferSide" value="0.1"/>
-<arg name="corridorLongitudinalOffset" value="0.0"/>
+<arg name="corridorLongitudinalOffset" value="0.4"/>
 
-<arg name="desiredDeceleration" value="6.0"/>
+<arg name="desiredDeceleration" value="4.0"/>
 
 <group ns="Operator/SafeCorridorControl" if="$(eval isOperator)">
     <node name="SafeTrajCreator" pkg="tod_safe_corridor" type="SafeTrajCreator" output="screen">
