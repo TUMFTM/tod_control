@@ -49,7 +49,7 @@
         <remap from="/status_msg" to="/Operator/Manager/status_msg"/>
         <remap from="gate_state" to="gate_state_operator"/>
         <param name="namespace_for_safety_issues" value="/Operator/"/>
-        <param name="verbose" value="true"/>
+        <param name="verbose" value="false"/>
     </node>
 
     <node name="OperatorWatchdog" pkg="tod_safety_monitoring" type="OperatorWatchdog" output="screen"/>
@@ -73,7 +73,7 @@
         <remap from="/status_msg" to="/Vehicle/Manager/status_msg"/>
         <remap from="gate_state" to="gate_state_vehicle"/>
         <param name="namespace_for_safety_issues" value="/Vehicle/"/>
-        <param name="verbose" value="true"/>
+        <param name="verbose" value="false"/>
     </node>
 
     <include file="$(find tod_pure_pursuit)/launch/tod_pure_pursuit.launch">

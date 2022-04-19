@@ -10,6 +10,8 @@ see `package.xml`
 
 Follow the documentation in [teleoperated_driving](https://github.com/TUMFTM/teleoperated_driving). In `OperatorManagerWidget` klick on `Connect`, select `Safe Corridor` and click on `Start`. Select the `VirtualInputDevice`, shift gears (Up: "T", Down: "G") and start driving.
 
+**Advice:** In `tod_safe_corridor.launch` set `verbose` for `tod_safety_gate` to `true`. Therefore, the safety gate will output information on the current state and state changes.
+
 ### Provoke a Safety Issue
 
 `OperatorWatchdog` and `VehicleWatchdog` (package: `tod_safety_monigoring`) are monitoring multiple signals (e.g. Video Streams). Start vehicle.launch in mode `playbackSim` and deactivate a VideoStream in `Video Scene Manager` while driving. This will cause an issue in OperatorWatchdog and close the SafetyGate. The vehicle will stop within the visualized corridor.
