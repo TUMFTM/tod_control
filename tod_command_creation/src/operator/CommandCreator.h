@@ -13,6 +13,7 @@
 #include <map>
 #include <algorithm>
 #include <ros/ros.h>
+#include <tod_core/VehicleParameters.h>
 
 class CommandCreator {
 public:
@@ -28,13 +29,14 @@ private:
     uint8_t _status{tod_msgs::Status::TOD_STATUS_IDLE};
     tod_msgs::PrimaryControlCmd _primaryControlMsg;
     tod_msgs::SecondaryControlCmd _secondaryControlMsg;
+    std::unique_ptr<tod_core::VehicleParameters> _vehParams;
+    ros::NodeHandle _nh;
 
     bool _constraintSteeringRate{false};
     bool _invertSteeringInGearReverse{false};
     float _maxSpeedms{10};
     float _maxAcceleration{4};
     float _maxDeceleration{9};
-    double _maxSteeringWheelAngle{1.0};
     double _maxSteeringWheelAngleRate{15.0};
     bool _joystickInputSet{false};
 

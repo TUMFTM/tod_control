@@ -1,0 +1,88 @@
+<?xml version="1.0"?>
+<launch>
+
+<arg name="isVehicle" default="false"/>
+<arg name="isOperator" default="true"/>
+<arg name="isVisualization" value="false"/>
+
+<arg name="segmentLength" value="0.1"/>
+<arg name="ppLookaheadRatio" value="0.3"/>
+<arg name="ppMinLookaheadDistance" value="2.0"/>
+
+<arg name="corridorBufferFront" value="0.1"/>
+<arg name="corridorBufferSide" value="0.1"/>
+<arg name="corridorLongitudinalOffset" value="0.4"/>
+
+<arg name="desiredDeceleration" value="4.0"/>
+
+<group ns="Operator/SafeCorridorControl" if="$(eval isOperator)">
+    <node name="SafeTrajCreator" pkg="tod_safe_corridor" type="SafeTrajCreator" output="screen">
+        <remap from="/primary_control_cmd" to="/Operator/CommandCreation/primary_control_cmd"/>
+        <remap from="/status_msg" to="/Operator/Manager/status_msg"/>
+        <remap from="/odometry" to="/Operator/VehicleBridge/odometry"/>
+        <param name="segmentLength" value="$(arg segmentLength)"/>
+        <param name="corridorBufferFront" value="$(arg corridorBufferFront)"/>
+        <param name="corridorBufferSide" value="$(arg corridorBufferSide)"/>
+        <param name="corridorLongitudinalOffset" value="$(arg corridorLongitudinalOffset)"/>
+        <param name="desiredDeceleration" value="$(arg desiredDeceleration)"/>
+        <param name="frame_odom" value="ftm"/>
+        <param name="frame_rear_axle_footprint" value="rear_axle_footprint"/>
+        <param name="timeOffsetToDeceleration" value="0.2"/>
+        <param name="lookaheadRatio" value="$(arg ppLookaheadRatio)"/> <!-- to provide sufficient points for tod_pure_pursuit -->
+        <param name="minLookaheadDistance" value="$(arg ppMinLookaheadDistance)"/>
+    </node>
+    
+    <node name="TrajectorySender" pkg="tod_safe_corridor" type="OperatorTrajectorySender" output="screen">
+        <remap from="/topic_to_send" to="safe_trajectory_control_command"/>
+        <remap from="/status_msg" to="/Operator/Manager/status_msg"/>
+    </node>
+    
+    <node name="GateStateReceiver" pkg="tod_safe_corridor" type="OperatorGateStateReceiver" output="screen">
+        <remap from="/received_topic" to="gate_state_vehicle"/>
+    </node>
+
+    <node pkg="tod_safety_monitoring" name="tod_safety_gate" type="safety_gate" output="screen">
+        <param name="debug" value="false"/>
+        <param name="mandatoryTopics" value="$(find tod_safety_monitoring)/config/OperatorMandatoryTopics.txt"/>
+        <remap from="/trajectory_in" to="trajectory_control_command"/>
+        <remap from="/trajectory_out" to="safe_trajectory_control_command"/>
+        <remap from="/status_msg" to="/Operator/Manager/status_msg"/>
+        <remap from="gate_state" to="gate_state_operator"/>
+        <param name="namespace_for_safety_issues" value="/Operator/"/>
+        <param name="verbose" value="false"/>
+    </node>
+
+    <node name="OperatorWatchdog" pkg="tod_safety_monitoring" type="OperatorWatchdog" output="screen"/>
+</group>
+
+<group ns="Vehicle/SafeCorridorControl" if="$(eval isVehicle)">
+    <node name="GateStateSender" pkg="tod_safe_corridor" type="VehicleGateStateSender" output="screen">
+        <remap from="/topic_to_send" to="gate_state_vehicle"/>
+        <remap from="/status_msg" to="/Vehicle/Manager/status_msg"/>
+    </node>
+
+    <node name="TrajectoryReceiver" pkg="tod_safe_corridor" type="VehicleTrajectoryReceiver" output="screen">
+        <remap from="/received_topic" to="trajectory_control_command"/>
+    </node>
+    
+    <node pkg="tod_safety_monitoring" name="tod_safety_gate" type="safety_gate" output="screen">
+        <param name="debug" value="false"/>
+        <param name="mandatoryTopics" value="$(find tod_safety_monitoring)/config/VehicleMandatoryTopics.txt"/>
+        <remap from="/trajectory_in" to="trajectory_control_command"/>
+        <remap from="/trajectory_out" to="safe_trajectory_control_command"/>
+        <remap from="/status_msg" to="/Vehicle/Manager/status_msg"/>
+        <remap from="gate_state" to="gate_state_vehicle"/>
+        <param name="namespace_for_safety_issues" value="/Vehicle/"/>
+        <param name="verbose" value="false"/>
+    </node>
+
+    <include file="$(find tod_pure_pursuit)/launch/tod_pure_pursuit.launch">
+        <arg name="controlModePackage" value="SafeCorridorControl"/>
+        <arg name="ControlMode" value="5"/> <!--number from include/tod_msgs/controlMode.h-->
+        <arg name="checkTrajectoryOutdated" value="true"/>
+    </include>
+    
+    <node name="VehicleWatchdog" pkg="tod_safety_monitoring" type="VehicleWatchdog" output="screen"/>
+</group>
+
+</launch>

@@ -4,7 +4,7 @@
     <version>1.0.0</version>
     <description>The tod_command_creation package</description>
 
-    <maintainer email="hoffmann@ftm.mw.tum.de">Simon Hoffmann</maintainer>
+    <maintainer email="simon.hoffmann@tum.de">Simon Hoffmann</maintainer>
     <license>LGPLv3</license>
 
     <buildtool_depend>catkin</buildtool_depend>
@@ -13,6 +13,7 @@
     <build_depend>tod_msgs</build_depend>
     <build_depend>tod_helper</build_depend>
     <build_depend>tod_network</build_depend>
+    <build_depend>tod_core</build_depend>
 
     <build_export_depend>roscpp</build_export_depend>
     <build_export_depend>tod_msgs</build_export_depend>
