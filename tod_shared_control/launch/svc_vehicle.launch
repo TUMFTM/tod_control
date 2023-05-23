@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<launch>
+<arg name="useDummyObjects" default="false"/>
+<arg name="useShadowAsOperatorSim" default="false"/>
+<arg name="runRviz" default="false"/>
+
+<node name="SharedVelocityController" pkg="tod_shared_control" type="SharedVelocityController" output="screen">
+    <param name="log_trajectory_tree_trajectories" value="true"/>
+    <remap from="/Vehicle/Lidar/GridMap/object_list" to="/Vehicle/Lidar/dummy_object_list" if="$(eval useDummyObjects)"/>
+    <remap from="/Vehicle/Lidar/LidarRear/object_list" to="/Vehicle/Lidar/dummy_object_list" if="$(eval useDummyObjects)"/>
+    <remap from="/Vehicle/CommandCreation/primary_control_cmd" to="Shadow/primary_control_cmd" if="$(eval useShadowAsOperatorSim)"/>
+</node>
+
+<node name="ObjectListViz" pkg="tod_helper" type="ObjectListViz" output="screen" if="$(eval runRviz)">
+    <remap from="object_list" to="avoided_obstacles"/>
+    <remap from="object_marker" to="avoided_obstacles_marker"/>
+</node>
+
+<node name="ColoredPolygonViz" pkg="tod_helper" type="ColoredPolygonViz" output="screen" if="$(eval runRviz)">
+    <remap from="colored_polygon" to="predicted_polygon"/>
+    <remap from="polygon" to="predicted_polygon_viz"/>
+</node>
+
+</launch>
+

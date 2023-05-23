@@ -1,0 +1,6 @@
+add_subdirectory(dummy)
+add_subdirectory(fbl)
+add_subdirectory(mpc)
+add_subdirectory(network)
+add_subdirectory(ptc)
+add_subdirectory(svc)

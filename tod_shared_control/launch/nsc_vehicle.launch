@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<launch>
+<arg name="useDummyObjects" default="false"/>
+<arg name="useShadowAsOperatorSim" default="false"/>
+<arg name="runRviz" default="false"/>
+
+<node pkg="tod_shared_control" type="CommandMultiplexer" name="CommandMultiplexer" output="screen">
+    <param name="static_authority" value="true"/>
+    <param name="static_weight_operator" value="0.0"/>
+</node>
+
+<include file="$(find tod_shared_control)/launch/ptc_vehicle.launch">
+    <arg name="useDummyObjects" value="$(arg useDummyObjects)"/>
+</include>
+
+</launch>

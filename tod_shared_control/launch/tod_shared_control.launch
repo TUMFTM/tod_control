@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<launch>
+
+<arg name="isVehicle" default="true"/>
+<arg name="isOperator" default="false"/>
+
+<arg name="doLogging" value="false"/> <!-- on vehicle side - to enable, make sure path specified below exists -->
+<arg name="runRqtMultiplot" value="false"/> <!-- monitor computation time and controller interventions -->
+<arg name="runRviz" value="false"/> <!-- topview of controller predictions -->
+
+<!-- SHARED CONTROL MODES -->
+<!-- mpc: shared steering and velocity control (SSVC) -->
+<!-- svc: shared velocity control (SVC) -->
+<arg name="mode" value="svc"/>
+
+<!-- PATH TRACKING CONTROLLERS SIMULATING OPERATOR IN SHADOW MODE -->
+<!-- fbl: feedback linearization-based path tracking control -->
+<!-- ptc: model predictive control-based path tracking control -->
+<arg name="shadow_mode" value="fbl"/> <!-- none: to disable shadow mode -->
+
+<!-- published from dummy object list publisher -->
+<arg name="useDummyObjects" value="true"/>
+
+<!-- disable (false) to receive control commands from actual operator -->
+<arg name="useShadowAsOperatorSim" value="true"/>
+
+<group ns="Vehicle/SharedControl" if="$(eval isVehicle)">
+    <include file="$(find tod_shared_control)/launch/$(arg mode)_vehicle.launch">
+        <arg name="useDummyObjects" value="$(arg useDummyObjects)"/>
+        <arg name="useShadowAsOperatorSim" value="$(arg useShadowAsOperatorSim)"/>
+        <arg name="runRviz" value="$(eval runRviz)"/>
+    </include>
+
+    <group ns="Shadow" if="$(eval shadow_mode != 'none')">
+        <include file="$(find tod_shared_control)/launch/$(arg shadow_mode)_vehicle.launch">
+            <arg name="useDummyObjects" value="$(arg useDummyObjects)"/>
+            <arg name="useShadowAsOperatorSim" value="false"/>
+            <arg name="runRviz" value="$(eval runRviz)"/>
+        </include>
+    </group>
+
+    <node name="Senders" pkg="tod_shared_control" type="VehicleSenders" output="screen"/>
+
+    <node name="rqt_multiplot" pkg="rqt_multiplot" type="rqt_multiplot"
+        args="--multiplot-config $(find tod_shared_control)/config/$(arg mode)_rqt_multiplot.xml --multiplot-run-all"
+        if="$(eval runRqtMultiplot)"/>
+
+    <node type="rviz" name="rviz" pkg="rviz" args="-d $(find tod_shared_control)/config/$(arg mode).rviz"
+        if="$(eval runRviz)"/>
+
+    <node pkg="rosbag" type="record" name="record" if="$(eval doLogging)"
+        args="-o /home/$(env USER)/Documents/ToD_Logs/$(arg mode)/$(arg mode)
+            /Vehicle/SharedControl/$(arg mode)_log
+            /Vehicle/SharedControl/Shadow/$(arg shadow_mode)_log"/>
+</group>
+
+<group ns="Vehicle/Lidar" if="$(eval isVehicle and useDummyObjects)">
+    <node name="DummyObjects" pkg="tod_shared_control" type="ObjectListPublisher" output="screen"/>
+    <node name="ObjectListViz" pkg="tod_helper" type="ObjectListViz" output="screen" if="$(eval runRviz)">
+        <remap from="object_list" to="dummy_object_list"/>
+        <remap from="object_marker" to="dummy_object_list_marker"/>
+    </node>
+
+</group>
+
+<group ns="Operator/SharedControl" if="$(eval isOperator)">
+    <node name="Receivers" pkg="tod_shared_control" type="OperatorReceivers" output="screen"/>
+</group>
+
+</launch>

@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<launch>
+<arg name="useDummyObjects" default="false"/>
+<arg name="useShadowAsOperatorSim" default="false"/>
+<arg name="runRviz" default="false"/>
+
+<node pkg="tod_shared_control" type="PathTrackingController" name="PathTrackingController" output="screen">
+    <remap from="/Vehicle/CommandCreation/primary_control_cmd" to="Shadow/primary_control_cmd" if="$(eval useShadowAsOperatorSim)"/>
+</node>
+
+<node pkg="tod_helper" type="TrajectoryViz" name="TrajectoryViz" output="screen" if="$(eval runRviz)"/>
+<node pkg="tod_shared_control" type="TrajectoryGenerator" name="DummyTrajectoryGenerator" output="screen"/>
+
+</launch>
